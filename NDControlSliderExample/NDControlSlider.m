@@ -1,10 +1,28 @@
-//
-//  NDControlSlider.m
-//  PhysicsDemo
-//
-//  Created by Eric Yim on 11-08-29.
-//  Copyright 2011 N/A. All rights reserved.
-//
+/*
+ * NDControlSlider.m
+ *
+ * Copyright 2011 Eric Yim.
+ * Created by Eric Yim on 11-08-29.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to 
+ * deal in the Software without restriction, including without limitation the 
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+ * IN THE SOFTWARE.
+ *
+ */
 
 #import "NDControlSlider.h"
 #import "NDControlButton.h"
@@ -29,8 +47,8 @@
 - (id)initWithFrameNormalSprite:(CCSprite *)frameNormalSprite tabButton:(NDControlButton *)tab {
     // Duplicates normalSprite since no disabled sprite is provided.
     CCSprite *frameDisabledSprite = [CCSprite spriteWithTexture:frameNormalSprite.texture];
-    // Makes disabledSprite translucent
-    frameDisabledSprite.opacity = 128;
+    // dims disabledSprite
+    frameDisabledSprite.color = ccc3(150, 150, 150);
     return [self initWithFrameNormalSprite:frameNormalSprite frameDisabledSprite:frameDisabledSprite tabButton:tab];
 }
 
@@ -44,7 +62,7 @@
     if (self) {
         // Sets slider's content size as normal frame sprite's
         self.contentSize =  frameNormalSprite.contentSize;
-        // Cetners frame on node's anchor
+        // Centers frame on node's anchor
         frameNormalSprite.position = self.childrenAnchorPointInPixels;
         [self addChild:frameNormalSprite z:1 tag:kFrameNormalSpriteTag];
         
@@ -58,7 +76,7 @@
         
         [self addChild:tab z:2 tag:kTabButtonTag];
         value_ = -1;
-        [self setValue:0];
+        self.value = 0;
     }
     
     return self;
@@ -90,23 +108,25 @@
 }
 
 - (void)setValue:(float)newValue {
-    // Bounds newValue to [0,1] 
-    if (newValue < 0) {
-        newValue = 0;
-    }
-    else if (newValue > 1.0f) {
-        newValue = 1.0f;
-    }
-    if (value_ != newValue) {
-        value_ = newValue;
-        
-        // Positions tab proportional to newValue
-        NDControlButton *tab = (NDControlButton *)[self getChildByTag:kTabButtonTag];
-        CGPoint tabPosition = CGPointMake(self.childrenAnchorPointInPixels.x + minX_ + value_ * (maxX_ - minX_), self.childrenAnchorPointInPixels.y);
-        tab.position = tabPosition;
-        
-        // Sends value changed event related actions
-        [self sendActionsForControlEvents:CCControlEventValueChanged];
+    if (self.enabled) {
+        // Bounds newValue to [0,1] 
+        if (newValue < 0) {
+            newValue = 0;
+        }
+        else if (newValue > 1.0f) {
+            newValue = 1.0f;
+        }
+        if (value_ != newValue) {
+            value_ = newValue;
+            
+            // Positions tab proportional to newValue
+            NDControlButton *tab = (NDControlButton *)[self getChildByTag:kTabButtonTag];
+            CGPoint tabPosition = CGPointMake(self.childrenAnchorPointInPixels.x + minX_ + value_ * (maxX_ - minX_), self.childrenAnchorPointInPixels.y);
+            tab.position = tabPosition;
+            
+            // Sends value changed event related actions
+            [self sendActionsForControlEvents:CCControlEventValueChanged];
+        }
     }
 }
 

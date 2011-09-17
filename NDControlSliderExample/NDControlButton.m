@@ -245,8 +245,8 @@
 - (CCSprite *)disabledSpriteForNormalSprite:(CCSprite *)normalSprite {
     // Duplicates normalSprite since no disabled sprite is provided.
     CCSprite *disabledSprite = [CCSprite spriteWithTexture:normalSprite.texture];
-    // Makes disabledSprite translucent
-    disabledSprite.opacity = 128;
+    // Dims disabledSprite
+    disabledSprite.color = ccc3(150, 150, 150);
     return disabledSprite;
 }
 
