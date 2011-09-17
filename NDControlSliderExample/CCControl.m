@@ -225,7 +225,7 @@
 - (BOOL)isMouseInside:(NSEvent *)event
 {
     CGPoint location = [[CCDirector sharedDirector] convertEventToGL:event];
-
+    
     return CGRectContainsPoint([self boundingBox], location);
 }
 
@@ -247,7 +247,7 @@
 {
     // Retrieve all invocations for the given control event
     NSMutableArray *eventInvocationList = [self dispatchListforControlEvent:controlEvent];
-
+    
 #if NS_BLOCKS_AVAILABLE
     NSPredicate *predicate = 
     [NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary *bindings)
@@ -261,7 +261,7 @@
          {
              return YES;
          } 
-
+         
          return NO;
      }];
     
