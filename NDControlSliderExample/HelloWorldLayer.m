@@ -55,7 +55,8 @@
 	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init])) {
 		sliderTouchDownValue_ = 0;
-        updateOnTouchUp_ = YES;
+        // Disables update-on-touch-up by default
+        updateOnTouchUp_ = NO;
         
 		// create and initialize a Label
 		CCLabelTTF *label = [CCLabelTTF labelWithString:@"0.00" fontName:@"Marker Felt" fontSize:64];
@@ -72,29 +73,29 @@
         CCSprite *normal = [CCSprite spriteWithFile:@"Icon.png"];
         CCSprite *selected = [CCSprite spriteWithFile:@"Icon.png"];
         selected.opacity = 180;
-        // create slider with above sprites
+        // Creates slider with above sprites
         NDControlButton *tabButton = [NDControlButton buttonWithNormalSprite:normal 
                                                            selectedSprite:selected];
         NDControlSlider *slider = [NDControlSlider sliderWithFrameNormalSprite:[CCSprite spriteWithFile:@"slider-frame.png"] 
                                                                tabButton:tabButton];
-        // position slider
+        // Positions slider
         slider.position = ccp(0.5 * size.width, 100.0f);
         // add slider to layer
         [self addChild:slider z:1 tag:kSliderTag];
         
-        // setup event handlers
+        // Sets up event handlers
         [slider addTarget:self action:@selector(touchDown:) forControlEvents:CCControlEventTouchDown];
         [slider addTarget:self action:@selector(touchCancel:) forControlEvents:CCControlEventTouchCancel];
         [slider addTarget:self action:@selector(valueChanged:) forControlEvents:CCControlEventValueChanged];
         [slider addTarget:self action:@selector(touchUpInside:) forControlEvents:CCControlEventTouchUpInside | CCControlEventTouchUpOutside];
-        // NDControlSlider doesn't support the following events
+        // NDControlSlider doesn't respond to the following events
         [slider addTarget:self action:@selector(touchDragInside:) forControlEvents:CCControlEventTouchDragInside];
         [slider addTarget:self action:@selector(touchDragOutside:) forControlEvents:CCControlEventTouchDragOutside];
         [slider addTarget:self action:@selector(touchDragEnter:) forControlEvents:CCControlEventTouchDragEnter];
         [slider addTarget:self action:@selector(touchDragExit:) forControlEvents:CCControlEventTouchDragExit];
         
+        // Creates a button that toggles the slider
         normal = [CCSprite spriteWithFile:@"Icon-Small.png"];
-        // this button toggles the slider's enabled state
         NDControlButton *sliderOnOffButton = [NDControlButton buttonWithNormalSprite:normal];
         sliderOnOffButton.position = ccp(0.5 * size.width, 30.0f);
         [self addChild:sliderOnOffButton z:1 tag:kOnOffButton];
@@ -103,10 +104,10 @@
 	return self;
 }
 
-#pragma Event Handlers
+#pragma mark Event Handlers
 
 - (void)touchDown:(CCControl *)sender {
-    // if updateOnTouchUp_, save starting position so that we may return
+    // If updateOnTouchUp_, save starting position so that we may return
     // tab to original position if touch is cancelled
     if (updateOnTouchUp_) {
         NDControlSlider *slider = (NDControlSlider *)sender;
@@ -135,17 +136,17 @@
 }
 
 - (void)touchUpInside:(CCControl *)sender {
-    // if sender is kind of slider and updateOnTouchUp_, update 
+    // If sender's tag is kSliderTag and updateOnTouchUp_, update 
     // label.string
-    if ([sender isKindOfClass:[NDControlSlider class]]) {
+    if (sender.tag == kSliderTag) {
         if (updateOnTouchUp_) {
             NDControlSlider *slider = (NDControlSlider *)sender;
             CCLabelTTF *label = (CCLabelTTF *)[self getChildByTag:kLabelTag];
             label.string = [NSString stringWithFormat:@"%.2f", slider.value];
         }
     }
-    // else if sender is kind of button, toggle slider
-    else if ([sender isKindOfClass:[NDControlButton class]]) {
+    // Else if sender's tag is kOnOffButton, toggle slider
+    else if (sender.tag == kOnOffButton) {
         NDControlSlider *slider = (NDControlSlider *)[self getChildByTag:kSliderTag];
         slider.enabled = !slider.enabled;
     }
@@ -157,7 +158,7 @@
 }
 
 - (void)touchCancel:(CCControl *)sender {
-    // if updateOnTouchUp_, return tab to starting position
+    // If updateOnTouchUp_, return tab to starting position
     if (updateOnTouchUp_) {
         NDControlSlider *slider = (NDControlSlider *)sender;
         slider.value = sliderTouchDownValue_;
@@ -167,7 +168,7 @@
 }
 
 - (void)valueChanged:(CCControl *)sender {
-    // if !updateOnTouchUp_, update label.string
+    // If !updateOnTouchUp_, update label.string
     if (!updateOnTouchUp_) {
         NDControlSlider *slider = (NDControlSlider *)sender;
         CCLabelTTF *label = (CCLabelTTF *)[self getChildByTag:kLabelTag];
